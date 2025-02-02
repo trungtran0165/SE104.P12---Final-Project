@@ -64,6 +64,44 @@ const chatbotController = {
                 message: error.message 
             });
         }
+    },
+
+    clearHistory: async (req, res) => {
+        try {
+            const { MaTaiKhoan } = req.params;
+            
+            console.log('Attempting to clear history for user:', MaTaiKhoan);
+            
+            if (!MaTaiKhoan || isNaN(MaTaiKhoan)) {
+                return res.status(400).json({ 
+                    success: false,
+                    error: 'Invalid User ID' 
+                });
+            }
+
+            const result = await chatbotService.deleteAll(parseInt(MaTaiKhoan));  // Changed from clearChatHistory to deleteAll
+            
+            if (result === 0) {
+                return res.status(200).json({
+                    success: true,
+                    message: 'No messages to delete',
+                    deletedCount: 0
+                });
+            }
+
+            res.status(200).json({ 
+                success: true, 
+                message: 'Chat history cleared successfully',
+                deletedCount: result
+            });
+        } catch (error) {
+            console.error('Error in clearHistory controller:', error);
+            res.status(500).json({ 
+                success: false,
+                error: 'Failed to clear chat history',
+                message: error.message
+            });
+        }
     }
 };
 
